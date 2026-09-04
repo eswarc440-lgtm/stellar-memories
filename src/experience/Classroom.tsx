@@ -44,12 +44,12 @@ function DustMotes({ count = 340 }: { count?: number }) {
   }, [count]);
 
   useFrame((state, delta) => {
-    const pos = geo.attributes.position as THREE.BufferAttribute;
+    const pos = geo.attributes["position"] as THREE.BufferAttribute;
     const arr = pos.array as Float32Array;
     for (let i = 0; i < count; i++) {
-      arr[i * 3 + 1] += delta * 0.09;
-      arr[i * 3] += Math.sin(state.clock.elapsedTime * 0.3 + i) * delta * 0.02;
-      if (arr[i * 3 + 1] > 4.3) arr[i * 3 + 1] = 0;
+      arr[i * 3 + 1] = (arr[i * 3 + 1] ?? 0) + delta * 0.09;
+      arr[i * 3] = (arr[i * 3] ?? 0) + Math.sin(state.clock.elapsedTime * 0.3 + i) * delta * 0.02;
+      if ((arr[i * 3 + 1] ?? 0) > 4.3) arr[i * 3 + 1] = 0;
     }
     pos.needsUpdate = true;
   });
@@ -76,8 +76,8 @@ export function Classroom({ scene, facultyName }: Props) {
     const g = group.current;
     if (!g) return;
     const k = 1 - Math.exp(-2.4 * delta);
-    g.userData.o = THREE.MathUtils.lerp(g.userData.o ?? 0, target, k);
-    const o = g.userData.o as number;
+    g.userData["o"] = THREE.MathUtils.lerp((g.userData["o"] as number) ?? 0, target, k);
+    const o = g.userData["o"] as number;
     g.visible = o > 0.02;
     g.position.y = (1 - o) * -1.2;
     g.traverse((child) => {
@@ -173,7 +173,7 @@ export function Classroom({ scene, facultyName }: Props) {
           <mesh key={i} position={[-0.9, 0.96 + i * 0.09, 0.1]} rotation-y={i * 0.08}>
             <boxGeometry args={[0.7, 0.09, 0.5]} />
             <meshStandardMaterial
-              color={["#8d3b3b", "#3b5a8d", "#3b8d5f"][i]}
+              color={["#8d3b3b", "#3b5a8d", "#3b8d5f"][i] ?? "#8d3b3b"}
               roughness={0.7}
             />
           </mesh>
